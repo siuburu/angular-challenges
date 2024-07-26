@@ -1,8 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
+import { CityStore } from '../../data-access/city.store';
 import { StudentStore } from '../../data-access/student.store';
 import { TeacherStore } from '../../data-access/teacher.store';
 import { CardType } from '../../model/card.model';
-
 @Component({
   selector: 'app-list-item',
   template: `
@@ -20,16 +20,17 @@ export class ListItemComponent {
   @Input() name!: string;
   @Input() type!: CardType;
 
-  constructor(
-    private teacherStore: TeacherStore,
-    private studentStore: StudentStore,
-  ) {}
+  private cityStore = inject(CityStore);
+  private teacherStore = inject(TeacherStore);
+  private studentStore = inject(StudentStore);
 
   delete(id: number) {
     if (this.type === CardType.TEACHER) {
       this.teacherStore.deleteOne(id);
     } else if (this.type === CardType.STUDENT) {
       this.studentStore.deleteOne(id);
+    } else if (this.type === CardType.CITY) {
+      this.cityStore.deleteOne(id);
     }
   }
 }
