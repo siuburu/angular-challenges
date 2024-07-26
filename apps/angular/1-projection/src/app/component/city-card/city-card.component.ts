@@ -1,4 +1,10 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { CityStore } from '../../data-access/city.store';
 import { FakeHttpService } from '../../data-access/fake-http.service';
 import { CardComponent } from '../../ui/card/card.component';
@@ -7,7 +13,7 @@ import { City } from './../../model/city.model';
 @Component({
   selector: 'app-city-card',
   template: `
-    <app-card [list]="cities" [type]="cardType" customClass="bg-light-blue">
+    <app-card [list]="cities()" [type]="cardType()" customClass="bg-light-blue">
       <img src="assets/img/city.png" width="200px" />
     </app-card>
   `,
@@ -22,8 +28,8 @@ import { City } from './../../model/city.model';
   imports: [CardComponent],
 })
 export class CityCardComponent implements OnInit {
-  cities: City[] = [];
-  cardType = CardType.CITY;
+  cities: WritableSignal<City[]> = signal([]);
+  cardType = signal(CardType.CITY);
   private http = inject(FakeHttpService);
   private store = inject(CityStore);
 
@@ -32,7 +38,7 @@ export class CityCardComponent implements OnInit {
       this.store.addAll(c);
     });
     this.store.cities$.subscribe((c) => {
-      this.cities = c;
+      this.cities.set(c);
     });
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { FakeHttpService } from '../../data-access/fake-http.service';
 import { StudentStore } from '../../data-access/student.store';
 import { CardType } from '../../model/card.model';
@@ -8,7 +8,10 @@ import { CardComponent } from '../../ui/card/card.component';
 @Component({
   selector: 'app-student-card',
   template: `
-    <app-card [list]="students" [type]="cardType" customClass="bg-light-green">
+    <app-card
+      [list]="students()"
+      [type]="cardType()"
+      customClass="bg-light-green">
       <img src="assets/img/student.webp" width="200px" />
     </app-card>
   `,
@@ -23,8 +26,8 @@ import { CardComponent } from '../../ui/card/card.component';
   imports: [CardComponent],
 })
 export class StudentCardComponent implements OnInit {
-  students: Student[] = [];
-  cardType = CardType.STUDENT;
+  students: WritableSignal<Student[]> = signal([]);
+  cardType = signal(CardType.STUDENT);
 
   constructor(
     private http: FakeHttpService,
@@ -34,6 +37,6 @@ export class StudentCardComponent implements OnInit {
   ngOnInit(): void {
     this.http.fetchStudents$.subscribe((s) => this.store.addAll(s));
 
-    this.store.students$.subscribe((s) => (this.students = s));
+    this.store.students$.subscribe((s) => this.students.set(s));
   }
 }
