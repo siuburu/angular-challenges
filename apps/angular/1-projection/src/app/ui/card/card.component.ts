@@ -1,7 +1,9 @@
 import { NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   contentChild,
+  input,
   Input,
   output,
   TemplateRef,
@@ -13,11 +15,11 @@ import { ListItemComponent } from '../list-item/list-item.component';
   template: `
     <div
       class="flex w-fit flex-col gap-3 rounded-md border-2 border-black p-4"
-      [class]="customClass">
+      [class]="customClass()">
       <ng-content select="img"></ng-content>
 
       <section>
-        @for (item of list; track item.id) {
+        @for (item of list; track item) {
           <ng-container>
             <ng-template
               [ngTemplateOutlet]="listItemTemplate()"
@@ -45,11 +47,12 @@ import { ListItemComponent } from '../list-item/list-item.component';
     }
   `,
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgIf, NgFor, NgTemplateOutlet, ListItemComponent],
 })
-export class CardComponent {
-  @Input() list: any[] | null = null;
-  @Input() customClass = '';
+export class CardComponent<T> {
+  @Input() list: T[] | null = null;
+  customClass = input('');
   add = output();
   listItemTemplate = contentChild.required<TemplateRef<any>>('listItemRef');
 }
