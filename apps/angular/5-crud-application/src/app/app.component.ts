@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { Todo } from './todo.model';
 import { TodoService } from './todo.service';
-
 @Component({
   standalone: true,
   imports: [CommonModule],
